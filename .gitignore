@@ -12,9 +12,4 @@ Thumbs.db
 ~$*
 *.tmp
 
-# Portfolio data and generated artifacts (regenerate via script)
-data/
-figures/
-results/
-
 
