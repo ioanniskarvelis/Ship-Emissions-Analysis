@@ -1,11 +1,17 @@
 # Ship Emissions Analysis: PCA and Clustering
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![R >=4.0](https://img.shields.io/badge/R-%E2%89%A5%204.0-276DC3?logo=r&logoColor=white)
+![Language: R](https://img.shields.io/badge/Language-R-276DC3?logo=r&logoColor=white)
+[![Data: THETIS-MRV](https://img.shields.io/badge/Data-THETIS--MRV-informational)](https://mrv.emsa.europa.eu/#public/emission-report)
+![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)
+
 This repository contains an R implementation of a pipeline for analyzing ship emissions using Principal Component Analysis (PCA) and k-means clustering. It reproduces figures and tables for correlation, PCA, and clustering validation.
 
 ## Project Structure
 
 ```
-portfolio/
+project/
   ├─ src/                 # R source code
   │   └─ implementation.R # Main analysis script
   ├─ data/                # Input data (not committed); place dataset.xlsx here
