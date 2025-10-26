@@ -1,0 +1,20 @@
+# R project ignores
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary/Office files
+~$*
+*.tmp
+
+# Portfolio data and generated artifacts (regenerate via script)
+data/
+figures/
+results/
+
+
