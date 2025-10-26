@@ -45,14 +45,56 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 ```
 
 ## Data
-
-- Place your Excel file as `portfolio/data/dataset.xlsx`.
+- Download the dataset Excel report file for 2024 reporting period.
+- Place your Excel file as `data/dataset.xlsx`.
 - The script expects the first two rows in the Excel file to be metadata and skips them, then drops the next two rows as per the original preprocessing.
 - Identification columns expected: `IMO Number...1`, `Name...2`, `Ship type`.
 
+### Data Source
+
+- Public EU MRV (Monitoring, Reporting and Verification) shipping emissions data from the THETIS-MRV portal (EMSA): `https://mrv.emsa.europa.eu/#public/emission-report`.
+- Export your required reporting year(s) from the portal as an Excel file and save it as `data/dataset.xlsx`. The variables used match the MRV public dataset (totals, intensities, and EU MS split emissions).
+
+## Analysis Pipeline
+
+End-to-end steps implemented in `src/implementation.R`:
+
+1. Ingestion
+   - Read `dataset.xlsx` skipping the first 2 header rows, then drop the next 2 non-data rows.
+   - Keep ID columns (`IMO Number...1`, `Name...2`, `Ship type`) and the following numeric indicators (grouped):
+     - Totals: Total fuel/CO₂/CH₄/N₂O/CO₂eq, Time at sea
+     - Intensities: Fuel/CO₂ per distance; Fuel/CO₂ per transport work
+     - EU MS split: CO₂ from voyages between/departing/to MS jurisdictions
+
+2. Cleaning and typing
+   - Replace textual placeholders like `Division by zero!` with `NA`.
+   - Coerce all selected indicators to numeric and drop incomplete rows (`complete.cases`).
+
+3. Standardization
+   - Standardize numerical columns to z-scores and label them `Z1..Z13`.
+
+4. Outlier detection (Mahalanobis)
+   - Compute Mahalanobis distances on standardized data; use generalized inverse if covariance is singular.
+   - Flag outliers with distance > 10 and create a reduced dataset excluding them. Save diagnostic plots.
+
+5. PCA (full and reduced)
+   - Run PCA on (a) full standardized data and (b) reduced data (outliers removed).
+   - Save scree plots, loadings tables (PC1–PC3 with variance explained), biplots, and principal component scores (with ship type and IDs).
+
+6. Clustering and validation
+   - Fit k-means on the first 3 PCs (reduced data) with `set.seed(123)`.
+   - Validation: Silhouette (k=2..20) and Gap statistic (k=1..20); save plots.
+   - Models: k=2, k=4, and k=14; save 2D PC scatterplots colored by cluster and a bar chart of cluster centers for k=4.
+   - Export final dataset with cluster assignments (IDs, ship type, PCs, and cluster labels).
+
+7. Optional subtype analysis
+   - If both "Bulk carrier" and "Container ship" exist, run separate PCAs and save a loadings comparison figure and table.
+
+Outputs are written under `figures/` and `results/` (see list below).
+
 ## How to Run
 
-From the `portfolio` folder in R or a terminal:
+From the project's folder in R or a terminal:
 
 ```bash
 Rscript src/implementation.R
@@ -60,8 +102,8 @@ Rscript src/implementation.R
 
 This will generate:
 
-- Figures into `portfolio/figures/`
-- CSV outputs into `portfolio/results/`
+- Figures into `figures/`
+- CSV outputs into `results/`
 
 ## Generated Artifacts
 
